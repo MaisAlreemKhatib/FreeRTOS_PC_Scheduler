@@ -90,7 +90,13 @@ static bool load_tasks(const char *input_filename)
         t->remaining_time = time;
         t->time_in_quantum= 0;
         t->state          = TASK_READY;
-        t->color_index    = g_task_count % 6;  // birkaç renk döndür
+         t->color_index = t->id;
+
+
+
+
+
+
         if (prio == 0) {
             t->current_queue = -1; // RT
         } else {

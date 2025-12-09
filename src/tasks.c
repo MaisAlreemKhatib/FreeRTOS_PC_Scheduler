@@ -1,22 +1,36 @@
 #include "scheduler.h"
 
-// Basit ANSI renk kodlari 
-static const char *colors[] = {
-    "\x1b[31m", // kirmizi
-    "\x1b[32m", // yesil
-    "\x1b[33m", // sari
+// Basit ANSI renk kodlari - GENİŞ PALET (her task farklı renk alır)
+static const char *color_table[] = {
+    "\x1b[31m", // kırmızı
+    "\x1b[32m", // yeşil
+    "\x1b[33m", // sarı
     "\x1b[34m", // mavi
     "\x1b[35m", // mor
-    "\x1b[36m"  // camgobek
+    "\x1b[36m", // camgöbeği
+    "\x1b[91m",
+    "\x1b[92m",
+    "\x1b[93m",
+    "\x1b[94m",
+    "\x1b[95m",
+    "\x1b[96m",
+    "\x1b[90m",
+    "\x1b[37m",
+    "\x1b[97m"
 };
+
+
+
 static const char *color_reset = "\x1b[0m";
 
 static const char *get_color(int idx)
 {
-    int n = (int)(sizeof(colors) / sizeof(colors[0]));
+    int n = sizeof(color_table) / sizeof(color_table[0]);
     if (idx < 0) idx = 0;
-    return colors[idx % n];
+    return color_table[idx % n];
 }
+
+
 
 // ---- Zaman formatı ----
 static void print_time_ms(int t)
@@ -28,18 +42,14 @@ static void print_time_ms(int t)
 void task_log_start(Task *task, int now)
 {
     const char *c = get_color(task->color_index);
-
     printf("%s", c);
     print_time_ms(now);
 
     if (task->base_priority == 0) {  
-        // RT görev
-        printf(" Gorev #%d BASLADI (id:%04d, oncelik=0, kalan sure=%d s)%s\n",
+        printf(" task%d basladi (id:%04d, oncelik=0, kalan=%d s)%s\n",
                task->id, task->id, task->remaining_time, color_reset);
-    } 
-    else {  
-        // Kullanıcı görevi
-        printf(" Gorev #%d BASLADI (id:%04d, kullanici oncelik=%d, kuyruk=%d, kalan=%d s)%s\n",
+    } else {
+        printf(" task%d basladi (id:%04d, kullanici oncelik=%d, kuyruk=%d, kalan=%d s)%s\n",
                task->id, task->id, task->base_priority, task->current_queue,
                task->remaining_time, color_reset);
     }
@@ -51,8 +61,8 @@ void task_log_tick(Task *task, int now)
     const char *c = get_color(task->color_index);
     printf("%s", c);
     print_time_ms(now);
-    printf(" Gorev #%d CALISIYOR (oncelik=%d, kuyruk=%d, kalan=%d s)%s\n",
-           task->id, task->base_priority, task->current_queue,
+    printf(" task%d yurutuluyor (id:%04d, oncelik=%d, kuyruk=%d, kalan=%d s)%s\n",
+           task->id, task->id, task->base_priority, task->current_queue,
            task->remaining_time, color_reset);
 }
 
@@ -64,11 +74,12 @@ void task_log_suspend(Task *task, int now, int new_queue_level)
     print_time_ms(now);
 
     if (task->base_priority == 0) {
-        printf(" RT Gorev #%d ASKIDA / BITTI (kalan=%d s)%s\n",
-               task->id, task->remaining_time, color_reset);
+        printf(" task%d askida/bitti (id:%04d, kalan=%d s)%s\n",
+               task->id, task->id, task->remaining_time, color_reset);
     } else {
-        printf(" Gorev #%d ASKIDA (yeni kuyruk=%d, kalan=%d s)%s\n",
-               task->id, new_queue_level, task->remaining_time, color_reset);
+        printf(" task%d askida (id:%04d, yeni kuyruk=%d, kalan=%d s)%s\n",
+               task->id, task->id, new_queue_level, task->remaining_time,
+               color_reset);
     }
 }
 
@@ -78,8 +89,8 @@ void task_log_resume(Task *task, int now)
     const char *c = get_color(task->color_index);
     printf("%s", c);
     print_time_ms(now);
-    printf(" Gorev #%d DEVAM EDIYOR (oncelik=%d, kuyruk=%d, kalan=%d s)%s\n",
-           task->id, task->base_priority, task->current_queue,
+    printf(" task%d devam ediyor (id:%04d, oncelik=%d, kuyruk=%d, kalan=%d s)%s\n",
+           task->id, task->id, task->base_priority, task->current_queue,
            task->remaining_time, color_reset);
 }
 
@@ -89,6 +100,6 @@ void task_log_finish(Task *task, int now)
     const char *c = get_color(task->color_index);
     printf("%s", c);
     print_time_ms(now);
-    printf(" Gorev #%d SONLANDI (oncelik=%d)%s\n",
-           task->id, task->base_priority, color_reset);
+    printf(" task%d sonlandi (id:%04d, oncelik=%d, kalan=0 s)%s\n",
+           task->id, task->id, task->base_priority, color_reset);
 }
