@@ -18,14 +18,12 @@ static const char *get_color(int idx)
     return colors[idx % n];
 }
 
-// ---- SADECE BURASI DEĞİŞTİ ----
-// Zamanı tam senin istediğin formatta yazar:  X.0000 sn
+// ---- Zaman formatı ----
 static void print_time_ms(int t)
 {
     printf("%d.0000 sn", t);
 }
 
-// --------------------------------
 // Görev başlarken
 void task_log_start(Task *task, int now)
 {
@@ -36,17 +34,16 @@ void task_log_start(Task *task, int now)
 
     if (task->base_priority == 0) {  
         // RT görev
-        printf("Gorev #%d BASLADI (id:%04d, oncelik=0, kalan sure=%d s)%s\n",
+        printf(" Gorev #%d BASLADI (id:%04d, oncelik=0, kalan sure=%d s)%s\n",
                task->id, task->id, task->remaining_time, color_reset);
     } 
     else {  
         // Kullanıcı görevi
-        printf("Gorev #%d BASLADI (id:%04d, kullanici oncelik=%d, kuyruk=%d, kalan=%d s)%s\n",
+        printf(" Gorev #%d BASLADI (id:%04d, kullanici oncelik=%d, kuyruk=%d, kalan=%d s)%s\n",
                task->id, task->id, task->base_priority, task->current_queue,
                task->remaining_time, color_reset);
     }
 }
-
 
 // Her saniye çalışırken
 void task_log_tick(Task *task, int now)
@@ -64,7 +61,6 @@ void task_log_suspend(Task *task, int now, int new_queue_level)
 {
     const char *c = get_color(task->color_index);
     printf("%s", c);
-
     print_time_ms(now);
 
     if (task->base_priority == 0) {
