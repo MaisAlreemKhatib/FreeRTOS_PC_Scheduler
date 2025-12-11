@@ -1,5 +1,6 @@
 #include "scheduler.h"
 
+
 int main(int argc, char *argv[])
 {
     const char *input_file = "giris.txt";
