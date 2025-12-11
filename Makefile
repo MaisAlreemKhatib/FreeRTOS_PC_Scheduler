@@ -14,4 +14,5 @@ $(TARGET):
 
 # Geçici dosyaları temizlemek için:
 clean:
+
 	rm -f $(TARGET)
