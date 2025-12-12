@@ -50,6 +50,7 @@ bool queue_is_full(const Queue *q)
 
 bool queue_enqueue(Queue *q, int task_index)
 {
+    // Kuyruk doluysa ekleme yapılamaz
     if (queue_is_full(q)) return false;
     q->rear = (q->rear + 1) % MAX_QUEUE_SIZE;
     q->items[q->rear] = task_index;
